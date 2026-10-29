@@ -1,0 +1,15 @@
+{
+  "name": "oficina-facil",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Projeto Integrador - Plataforma Oficina Facil",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
