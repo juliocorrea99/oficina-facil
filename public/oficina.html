@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil da Oficina - Oficina Fácil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">Oficina <span>Fácil</span></a>
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <div id="navbar-auth-links" class="d-flex align-items-center">
+            <a href="/oficinas.html" class="btn btn-outline-secondary btn-sm me-2">Buscar Oficinas</a>
+            <a href="/login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+            <a href="/cadastro.html" class="btn btn-primary btn-sm">Cadastrar-se</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-5">
+    <div class="mb-3">
+      <a href="/oficinas.html" class="text-decoration-none small">&larr; Voltar para a pesquisa de oficinas</a>
+    </div>
+
+    <div id="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted mt-2">Carregando perfil da oficina...</p>
+    </div>
+
+    <div id="conteudo-oficina" class="d-none">
+      <!-- Cabeçalho da Oficina -->
+      <div class="card auth-card p-4 p-md-5 mb-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h1 id="oficina-nome" class="h2 fw-bold text-primary mb-1">Nome da Oficina</h1>
+            <div id="oficina-razao" class="text-muted small mb-2">Razão Social</div>
+            <p id="oficina-descricao" class="lead text-dark mb-0 fs-6">Descrição da oficina.</p>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <strong class="d-block small text-muted">Localização</strong>
+            <span id="oficina-endereco" class="fw-medium">-</span>
+          </div>
+          <div class="col-md-4">
+            <strong class="d-block small text-muted">Telefone / Contato</strong>
+            <span id="oficina-telefone" class="fw-medium">-</span>
+          </div>
+          <div class="col-md-4">
+            <strong class="d-block small text-muted">CNPJ</strong>
+            <span id="oficina-cnpj" class="fw-medium">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <!-- Catálogo de Serviços (RF03, RF05) -->
+        <div class="col-lg-7">
+          <div class="card auth-card h-100 p-4">
+            <h2 class="h5 fw-bold text-primary mb-3">Serviços Oferecidos</h2>
+            <div id="lista-servicos" class="list-group list-group-flush">
+              <!-- Preenchido via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Horários de Funcionamento (RF03, RF05) -->
+        <div class="col-lg-5">
+          <div class="card auth-card h-100 p-4">
+            <h2 class="h5 fw-bold text-primary mb-3">Horários de Atendimento</h2>
+            <ul id="lista-horarios" class="list-unstyled mb-0">
+              <!-- Preenchido via JavaScript -->
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Janelas de Disponibilidade (RF03, RF05, RF07) -->
+      <div class="card auth-card p-4 mb-4">
+        <h2 class="h5 fw-bold text-primary mb-2">Disponibilidade na Agenda</h2>
+        <p class="text-muted small mb-3">Janelas de atendimento informadas pela oficina.</p>
+        <div id="lista-disponibilidades" class="d-flex flex-wrap gap-2">
+          <!-- Preenchido via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Avaliações dos Clientes (RF05, RF14) -->
+      <div class="card auth-card p-4">
+        <h2 class="h5 fw-bold text-primary mb-2">Avaliações dos Clientes</h2>
+        <p class="text-muted small mb-3">As avaliações de clientes serão exibidas quando o recurso estiver disponível.</p>
+
+        <div id="secao-avaliacoes" class="alert alert-light border text-center py-4 mb-0">
+          <span class="text-muted">Esta oficina ainda não possui avaliações cadastradas.</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-3 text-center text-muted">
+    <div class="container small">&copy; 2026 Oficina Fácil — Todos os direitos reservados.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    const DIAS = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      if (!id) {
+        window.location.href = '/oficinas.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/oficinas/${id}`);
+        if (!res.ok) {
+          document.getElementById('loading').innerHTML = `
+            <div class="alert alert-warning">Oficina não encontrada. <a href="/oficinas.html">Voltar para a busca</a></div>
+          `;
+          return;
+        }
+
+        const data = await res.json();
+        const o = data.oficina;
+
+        document.getElementById('loading').classList.add('d-none');
+        document.getElementById('conteudo-oficina').classList.remove('d-none');
+
+        document.getElementById('oficina-nome').textContent = o.nomeFantasia;
+        document.getElementById('oficina-razao').textContent = o.razaoSocial || '';
+        document.getElementById('oficina-descricao').textContent = o.descricao || 'Descrição não informada pela oficina.';
+        document.getElementById('oficina-endereco').textContent = `${o.cidade} / ${o.uf}${o.logradouro ? ' — ' + o.logradouro + ', ' + (o.numero || 'S/N') : ''}`;
+        document.getElementById('oficina-telefone').textContent = o.telefone || 'Não informado';
+        document.getElementById('oficina-cnpj').textContent = o.cnpj;
+
+        // Serviços
+        const servicosContainer = document.getElementById('lista-servicos');
+        if (o.servicos && o.servicos.length > 0) {
+          servicosContainer.innerHTML = o.servicos.map(s => `
+            <div class="list-group-item px-0 py-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <h3 class="h6 fw-bold mb-1">${s.nome}</h3>
+                <span class="badge bg-primary-subtle text-primary border">${s.precoEstimado ? 'R$ ' + parseFloat(s.precoEstimado).toFixed(2) : 'Sob Consulta'}</span>
+              </div>
+              <p class="text-muted small mb-1">${s.descricao || 'Sem descrição adicional.'}</p>
+              <span class="small text-secondary">Duração estimada: ${s.duracaoEstimadaMinutos} minutos</span>
+            </div>
+          `).join('');
+        } else {
+          servicosContainer.innerHTML = '<div class="text-muted small py-2">Nenhum serviço disponível no momento.</div>';
+        }
+
+        // Horários
+        const horariosContainer = document.getElementById('lista-horarios');
+        if (o.horarios && o.horarios.length > 0) {
+          horariosContainer.innerHTML = o.horarios.map(h => {
+            const diaNome = DIAS[h.diaSemana] || `Dia ${h.diaSemana}`;
+            const status = h.fechado ? '<span class="text-danger fw-semibold">Fechado</span>' : `${h.horarioAbertura} às ${h.horarioFechamento}`;
+            return `<li class="d-flex justify-content-between py-2 border-bottom"><span class="fw-medium">${diaNome}</span><span class="text-muted">${status}</span></li>`;
+          }).join('');
+        } else {
+          horariosContainer.innerHTML = '<li class="text-muted small">Horários de atendimento não cadastrados.</li>';
+        }
+
+        // Disponibilidade
+        const dispContainer = document.getElementById('lista-disponibilidades');
+        if (o.disponibilidades && o.disponibilidades.length > 0) {
+          dispContainer.innerHTML = o.disponibilidades.map(d => `
+            <div class="border rounded p-2 text-center bg-light">
+              <strong class="d-block small text-primary">${d.data}</strong>
+              <span class="small text-dark">${d.horarioInicio} - ${d.horarioFim}</span>
+              <div class="badge bg-secondary-subtle text-secondary d-block mt-1">${d.vagasSimultaneas} vaga(s)</div>
+            </div>
+          `).join('');
+        } else {
+          dispContainer.innerHTML = '<div class="text-muted small">Nenhuma janela de atendimento informada no momento.</div>';
+        }
+
+      } catch (error) {
+        document.getElementById('loading').innerHTML = '<div class="alert alert-danger">Erro ao carregar dados da oficina.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

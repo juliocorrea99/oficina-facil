@@ -2,10 +2,6 @@ const db = require('../db');
 
 /**
  * Cria os dados complementares de um perfil de cliente.
- * @param {object} dados
- * @param {number} dados.usuarioId
- * @param {string} [dados.cpf]
- * @param {object} [client] - Cliente de transação opcional
  */
 async function criarCliente({ usuarioId, cpf = null }, client = null) {
   const sql = `
@@ -21,8 +17,6 @@ async function criarCliente({ usuarioId, cpf = null }, client = null) {
 
 /**
  * Busca dados complementares do cliente pelo usuario_id.
- * @param {number|string} usuarioId
- * @param {object} [client]
  */
 async function buscarPorUsuarioId(usuarioId, client = null) {
   const sql = `
@@ -36,7 +30,24 @@ async function buscarPorUsuarioId(usuarioId, client = null) {
   return result.rows[0] || null;
 }
 
+/**
+ * Atualiza os dados específicos do cliente (RF02).
+ */
+async function atualizarCliente(usuarioId, { cpf = null }, client = null) {
+  const sql = `
+    UPDATE clientes
+    SET cpf = $1, atualizado_em = CURRENT_TIMESTAMP
+    WHERE usuario_id = $2
+    RETURNING id, usuario_id, cpf, criado_em, atualizado_em;
+  `;
+  const executor = client || db;
+  const params = [cpf ? cpf.trim() : null, usuarioId];
+  const result = await executor.query(sql, params);
+  return result.rows[0] || null;
+}
+
 module.exports = {
   criarCliente,
-  buscarPorUsuarioId
+  buscarPorUsuarioId,
+  atualizarCliente
 };

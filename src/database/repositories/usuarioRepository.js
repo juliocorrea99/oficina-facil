@@ -36,13 +36,6 @@ async function buscarPorId(id, client = null) {
 
 /**
  * Cria um novo registro de usuário no banco de dados.
- * @param {object} dados
- * @param {string} dados.nome
- * @param {string} dados.email
- * @param {string} dados.senhaHash
- * @param {string} dados.perfil - 'cliente' ou 'oficina'
- * @param {string} [dados.telefone]
- * @param {object} [client] - Cliente de transação opcional
  */
 async function criarUsuario({ nome, email, senhaHash, perfil, telefone = null }, client = null) {
   const sql = `
@@ -56,8 +49,25 @@ async function criarUsuario({ nome, email, senhaHash, perfil, telefone = null },
   return result.rows[0];
 }
 
+/**
+ * Atualiza os dados de identificação do próprio usuário (RF02).
+ */
+async function atualizarUsuario(id, { nome, email, telefone = null }, client = null) {
+  const sql = `
+    UPDATE usuarios
+    SET nome = $1, email = $2, telefone = $3, atualizado_em = CURRENT_TIMESTAMP
+    WHERE id = $4
+    RETURNING id, nome, email, perfil, telefone, ativo, criado_em, atualizado_em;
+  `;
+  const executor = client || db;
+  const params = [nome.trim(), email.trim().toLowerCase(), telefone ? telefone.trim() : null, id];
+  const result = await executor.query(sql, params);
+  return result.rows[0] || null;
+}
+
 module.exports = {
   buscarPorEmail,
   buscarPorId,
-  criarUsuario
+  criarUsuario,
+  atualizarUsuario
 };

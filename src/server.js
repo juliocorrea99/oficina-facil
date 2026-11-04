@@ -3,6 +3,8 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const oficinaRoutes = require('./routes/oficinaRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +29,12 @@ app.get('/api/health', (req, res) => {
 
 // Rotas do módulo de autenticação e cadastro (RF01)
 app.use('/api/auth', authRoutes);
+
+// Rotas de usuários e edição de perfil (RF02)
+app.use('/api/usuarios', usuarioRoutes);
+
+// Rotas de gestão, pesquisa e perfil de oficinas (RF03, RF04, RF05)
+app.use('/api/oficinas', oficinaRoutes);
 
 // Inicia o servidor.
 if (require.main === module) {

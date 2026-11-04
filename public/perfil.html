@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Perfil - Oficina Fácil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">Oficina <span>Fácil</span></a>
+        <div class="d-flex align-items-center">
+          <a href="/dashboard.html" class="btn btn-outline-secondary btn-sm me-2">Voltar ao Painel</a>
+          <button id="btn-logout-perfil" class="btn btn-outline-danger btn-sm">Sair</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card auth-card p-4 p-md-5">
+          <div class="auth-header">
+            <h1 class="h3 fw-bold mb-1">Editar Meu Perfil</h1>
+            <p class="text-muted small mb-0">Atualize seus dados cadastrais. As alterações são salvas com segurança no sistema.</p>
+          </div>
+
+          <div id="alerta-perfil" class="alert-container mb-3" aria-live="polite"></div>
+
+          <form id="form-perfil" novalidate>
+            <!-- Campos Comuns -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="nome" id="label-nome" class="form-label">Nome Completo *</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="email" class="form-label">E-mail *</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <div class="form-text">Se alterar o e-mail, ele deve ser único no sistema.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="telefone" class="form-label">Telefone / WhatsApp</label>
+                <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(99) 99999-9999">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Perfil de Acesso</label>
+                <input type="text" class="form-control" id="perfil-readonly" readonly disabled>
+                <div class="form-text">O tipo de perfil não pode ser alterado diretamente.</div>
+              </div>
+            </div>
+
+            <!-- Campos Exclusivos de Cliente -->
+            <div id="secao-cliente" class="row g-3 mb-3 d-none">
+              <div class="col-12"><hr class="my-2"><h2 class="h6 fw-bold text-primary">Dados do Cliente</h2></div>
+              <div class="col-md-6">
+                <label for="cpf" class="form-label">CPF</label>
+                <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00">
+              </div>
+            </div>
+
+            <!-- Campos Exclusivos de Oficina -->
+            <div id="secao-oficina" class="row g-3 mb-3 d-none">
+              <div class="col-12"><hr class="my-2"><h2 class="h6 fw-bold text-primary">Dados da Oficina</h2></div>
+
+              <div class="col-md-6">
+                <label for="nomeFantasia" class="form-label">Nome Fantasia *</label>
+                <input type="text" class="form-control" id="nomeFantasia" name="nomeFantasia">
+              </div>
+
+              <div class="col-md-6">
+                <label for="razaoSocial" class="form-label">Razão Social</label>
+                <input type="text" class="form-control" id="razaoSocial" name="razaoSocial">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">CNPJ</label>
+                <input type="text" class="form-control" id="cnpj-readonly" readonly disabled>
+                <div class="form-text">O CNPJ é vinculado à constituição da conta.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="cep" class="form-label">CEP</label>
+                <input type="text" class="form-control" id="cep" name="cep" placeholder="00000-000">
+              </div>
+
+              <div class="col-md-8">
+                <label for="logradouro" class="form-label">Endereço / Logradouro</label>
+                <input type="text" class="form-control" id="logradouro" name="logradouro">
+              </div>
+
+              <div class="col-md-4">
+                <label for="numero" class="form-label">Número</label>
+                <input type="text" class="form-control" id="numero" name="numero">
+              </div>
+
+              <div class="col-md-4">
+                <label for="complemento" class="form-label">Complemento</label>
+                <input type="text" class="form-control" id="complemento" name="complemento">
+              </div>
+
+              <div class="col-md-4">
+                <label for="bairro" class="form-label">Bairro</label>
+                <input type="text" class="form-control" id="bairro" name="bairro">
+              </div>
+
+              <div class="col-md-6">
+                <label for="cidade" class="form-label">Cidade *</label>
+                <input type="text" class="form-control" id="cidade" name="cidade">
+              </div>
+
+              <div class="col-md-2">
+                <label for="uf" class="form-label">UF *</label>
+                <select class="form-select" id="uf" name="uf">
+                  <option value="">--</option>
+                  <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                  <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                  <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                  <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                  <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                  <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                  <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                  <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                  <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label for="descricao" class="form-label">Breve Descrição / Especialidades</label>
+                <textarea class="form-control" id="descricao" name="descricao" rows="2"></textarea>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <a href="/dashboard.html" class="btn btn-outline-secondary">Cancelar</a>
+              <button type="submit" id="btn-salvar-perfil" class="btn btn-primary px-4">Salvar Alterações</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-3 text-center text-muted">
+    <div class="container small">&copy; 2026 Oficina Fácil — Todos os direitos reservados.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const usuario = await obterUsuarioAtual();
+      if (!usuario) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      document.getElementById('btn-logout-perfil').addEventListener('click', fazerLogout);
+
+      // Preenche dados comuns
+      document.getElementById('nome').value = usuario.nome || '';
+      document.getElementById('email').value = usuario.email || '';
+      document.getElementById('telefone').value = usuario.telefone || '';
+      document.getElementById('perfil-readonly').value = usuario.perfil === 'oficina' ? 'Oficina Mecânica' : 'Cliente';
+
+      const detalhes = usuario.perfilDetalhes || {};
+
+      if (usuario.perfil === 'cliente') {
+        document.getElementById('secao-cliente').classList.remove('d-none');
+        document.getElementById('cpf').value = detalhes.cpf || '';
+      } else if (usuario.perfil === 'oficina') {
+        document.getElementById('secao-oficina').classList.remove('d-none');
+        document.getElementById('label-nome').textContent = 'Nome do Responsável *';
+        document.getElementById('nomeFantasia').value = detalhes.nome_fantasia || '';
+        document.getElementById('razaoSocial').value = detalhes.razao_social || '';
+        document.getElementById('cnpj-readonly').value = detalhes.cnpj || '';
+        document.getElementById('cep').value = detalhes.cep || '';
+        document.getElementById('logradouro').value = detalhes.logradouro || '';
+        document.getElementById('numero').value = detalhes.numero || '';
+        document.getElementById('complemento').value = detalhes.complemento || '';
+        document.getElementById('bairro').value = detalhes.bairro || '';
+        document.getElementById('cidade').value = detalhes.cidade || '';
+        document.getElementById('uf').value = (detalhes.uf || '').toUpperCase();
+        document.getElementById('descricao').value = detalhes.descricao || '';
+      }
+
+      // Envio do formulário
+      const form = document.getElementById('form-perfil');
+      const btnSalvar = document.getElementById('btn-salvar-perfil');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        limparAlerta('alerta-perfil');
+
+        const payload = {
+          nome: document.getElementById('nome').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          telefone: document.getElementById('telefone').value.trim()
+        };
+
+        if (usuario.perfil === 'cliente') {
+          payload.cpf = document.getElementById('cpf').value.trim();
+        } else if (usuario.perfil === 'oficina') {
+          payload.nomeFantasia = document.getElementById('nomeFantasia').value.trim();
+          payload.razaoSocial = document.getElementById('razaoSocial').value.trim();
+          payload.cep = document.getElementById('cep').value.trim();
+          payload.logradouro = document.getElementById('logradouro').value.trim();
+          payload.numero = document.getElementById('numero').value.trim();
+          payload.complemento = document.getElementById('complemento').value.trim();
+          payload.bairro = document.getElementById('bairro').value.trim();
+          payload.cidade = document.getElementById('cidade').value.trim();
+          payload.uf = document.getElementById('uf').value.trim().toUpperCase();
+          payload.descricao = document.getElementById('descricao').value.trim();
+        }
+
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+
+        try {
+          const res = await fetch('/api/usuarios/perfil', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.sucesso) {
+            exibirAlerta('alerta-perfil', data.mensagem || 'Falha ao atualizar perfil.', 'danger', data.erros);
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = 'Salvar Alterações';
+            return;
+          }
+
+          exibirAlerta('alerta-perfil', 'Perfil atualizado com sucesso!', 'success');
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 800);
+        } catch (error) {
+          exibirAlerta('alerta-perfil', 'Erro de conexão com o servidor. Tente novamente.');
+          btnSalvar.disabled = false;
+          btnSalvar.textContent = 'Salvar Alterações';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
