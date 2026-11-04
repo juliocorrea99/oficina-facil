@@ -1,0 +1,97 @@
+/* ==========================================================
+   Oficina Fácil - Estilos customizados
+   Compatível com Bootstrap 5 e WCAG 2.1 AA (Acessibilidade)
+   ========================================================== */
+
+:root {
+  --of-primary: #0d6efd;
+  --of-primary-dark: #0a58ca;
+  --of-secondary: #495057;
+  --of-bg-light: #f8f9fa;
+  --of-card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+  --of-font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  font-family: var(--of-font-main);
+  background-color: var(--of-bg-light);
+  color: #212529;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Barra de Navegação */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.navbar-brand span {
+  color: #0d6efd;
+}
+
+/* Cartões de Formulário e Painel */
+.auth-card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: var(--of-card-shadow);
+  background-color: #ffffff;
+}
+
+.auth-header {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-logo {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+/* Indicador de perfil selecionado */
+.perfil-selector .btn-check:checked + .btn {
+  background-color: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
+  font-weight: 600;
+}
+
+/* Feedback de Validação */
+.alert-container {
+  min-height: 20px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #343a40;
+}
+
+.form-text {
+  font-size: 0.825rem;
+}
+
+/* Badges e tags */
+.badge-perfil {
+  font-size: 0.9rem;
+  padding: 0.45em 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Rodapé */
+footer {
+  margin-top: auto;
+  background-color: #ffffff;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Responsividade adicional */
+@media (max-width: 576px) {
+  .auth-card {
+    border-radius: 0.75rem;
+  }
+}

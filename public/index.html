@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oficina Fácil - Conectando você às melhores oficinas mecânicas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho / Navbar -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          Oficina <span>Fácil</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-dismiss="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Alternar navegação">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+          <div id="navbar-auth-links" class="d-flex align-items-center">
+            <!-- Preenchido dinamicamente via auth.js -->
+            <a href="/login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
+            <a href="/cadastro.html" class="btn btn-primary btn-sm">Cadastrar-se</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Seção Principal -->
+  <main class="container my-5">
+    <div class="row align-items-center py-4">
+      <div class="col-lg-7">
+        <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-2 fs-6 rounded-pill">Plataforma Web para Serviços Automotivos</span>
+        <h1 class="display-4 fw-bold lh-sm mb-3">Conectamos motoristas às oficinas mecânicas certas</h1>
+        <p class="lead text-muted mb-4">
+          O <strong>Oficina Fácil</strong> centraliza busca de oficinas, agendamentos, ordens de serviço, aprovação de orçamentos e avaliações em uma experiência simples, transparente e segura.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="/cadastro.html" class="btn btn-primary btn-lg px-4">Comece Agora</a>
+          <a href="/login.html" class="btn btn-outline-secondary btn-lg px-4">Já tenho conta</a>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-4 mt-lg-0">
+        <div class="card auth-card p-4">
+          <h2 class="h5 fw-bold mb-3 text-primary">Para quem é o Oficina Fácil?</h2>
+          
+          <div class="mb-3 p-3 bg-light rounded">
+            <h3 class="h6 fw-bold mb-1">Para Clientes / Motoristas</h3>
+            <p class="small text-muted mb-0">Cadastre seus veículos, agende manutenções, aprove orçamentos e acompanhe cada etapa do serviço com total transparência.</p>
+          </div>
+
+          <div class="p-3 bg-light rounded">
+            <h3 class="h6 fw-bold mb-1">Para Oficinas Mecânicas</h3>
+            <p class="small text-muted mb-0">Gerencie sua disponibilidade, organize sua agenda, elabore diagnósticos e orçamentos detalhados e receba avaliações dos clientes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="py-3 text-center text-muted">
+    <div class="container small">
+      &copy; 2026 Oficina Fácil — Projeto Integrador UNICEPLAC (Grupo Unidos). Todos os direitos reservados.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

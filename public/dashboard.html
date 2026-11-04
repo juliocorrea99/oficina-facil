@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Painel - Oficina Fácil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">Oficina <span>Fácil</span></a>
+        <div class="d-flex align-items-center">
+          <button id="btn-sair" class="btn btn-outline-danger btn-sm">Sair da Conta</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="container my-5">
+    <div id="loading-spinner" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Carregando painel...</span>
+      </div>
+      <p class="text-muted mt-2">Carregando seus dados...</p>
+    </div>
+
+    <div id="painel-conteudo" class="d-none">
+      <!-- Saudação e Perfil -->
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+          <h1 class="h3 fw-bold mb-1">
+            Olá, <span id="usuario-nome">Usuário</span>!
+          </h1>
+          <p class="text-muted mb-0">Bem-vindo ao seu painel na plataforma Oficina Fácil.</p>
+        </div>
+        <div>
+          <span id="badge-perfil" class="badge badge-perfil bg-primary">Cliente</span>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <!-- Card: Informações da Conta -->
+        <div class="col-md-6">
+          <div class="card auth-card h-100 p-4">
+            <h2 class="h5 fw-bold text-primary mb-3">Dados da Conta</h2>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><strong>ID:</strong> <span id="usuario-id">-</span></li>
+              <li class="mb-2"><strong>E-mail:</strong> <span id="usuario-email">-</span></li>
+              <li class="mb-2"><strong>Perfil:</strong> <span id="usuario-perfil-texto">-</span></li>
+              <li class="mb-2"><strong>Telefone:</strong> <span id="usuario-telefone">Não informado</span></li>
+              <li><strong>Conta criada em:</strong> <span id="usuario-criado-em">-</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card: Informações Específicas do Perfil -->
+        <div class="col-md-6">
+          <div class="card auth-card h-100 p-4">
+            <h2 id="titulo-detalhes-perfil" class="h5 fw-bold text-primary mb-3">Detalhes do Perfil</h2>
+            <div id="conteudo-detalhes-perfil">
+              <!-- Preenchido via JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Verificação de Controle de Acesso (RNF05) -->
+      <div class="card auth-card p-4">
+        <h2 class="h5 fw-bold text-dark mb-2">Verificação de Controle de Acesso por Perfil (RNF05)</h2>
+        <p class="text-muted small mb-3">
+          Teste as regras de autorização do servidor clicando nos botões abaixo. O back-end validará seu perfil e retornará <strong>200 OK</strong> se permitido ou <strong>403 Forbidden</strong> se negado.
+        </p>
+
+        <div class="d-flex gap-2 flex-wrap mb-3">
+          <button id="btn-testar-cliente" class="btn btn-outline-primary">
+            Testar Rota da Área do Cliente
+          </button>
+          <button id="btn-testar-oficina" class="btn btn-outline-success">
+            Testar Rota da Área da Oficina
+          </button>
+        </div>
+
+        <div id="resultado-teste-autorizacao" class="alert-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="py-3 text-center text-muted">
+    <div class="container small">
+      &copy; 2026 Oficina Fácil — Todos os direitos reservados.
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const usuario = await obterUsuarioAtual();
+
+      if (!usuario) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      document.getElementById('loading-spinner').classList.add('d-none');
+      document.getElementById('painel-conteudo').classList.remove('d-none');
+
+      // Preenche dados básicos
+      document.getElementById('usuario-nome').textContent = usuario.nome;
+      document.getElementById('usuario-id').textContent = usuario.id;
+      document.getElementById('usuario-email').textContent = usuario.email;
+      document.getElementById('usuario-perfil-texto').textContent = usuario.perfil === 'oficina' ? 'Oficina Mecânica' : 'Cliente';
+      document.getElementById('usuario-telefone').textContent = usuario.telefone || 'Não informado';
+      document.getElementById('usuario-criado-em').textContent = usuario.criadoEm
+        ? new Date(usuario.criadoEm).toLocaleDateString('pt-BR')
+        : 'Hoje';
+
+      const badgePerfil = document.getElementById('badge-perfil');
+      if (usuario.perfil === 'oficina') {
+        badgePerfil.className = 'badge badge-perfil bg-success';
+        badgePerfil.textContent = 'Oficina Mecânica';
+      } else {
+        badgePerfil.className = 'badge badge-perfil bg-primary';
+        badgePerfil.textContent = 'Cliente';
+      }
+
+      // Preenche detalhes do perfil
+      const containerDetalhes = document.getElementById('conteudo-detalhes-perfil');
+      const tituloDetalhes = document.getElementById('titulo-detalhes-perfil');
+      const detalhes = usuario.perfilDetalhes || {};
+
+      if (usuario.perfil === 'cliente') {
+        tituloDetalhes.textContent = 'Dados do Cliente';
+        containerDetalhes.innerHTML = `
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><strong>CPF:</strong> ${detalhes.cpf || 'Não informado'}</li>
+            <li><span class="badge bg-info-subtle text-info border px-2 py-1">Pronto para cadastrar veículos e agendar manutenções (RF06, RF07)</span></li>
+          </ul>
+        `;
+      } else if (usuario.perfil === 'oficina') {
+        tituloDetalhes.textContent = 'Dados da Oficina Mecânica';
+        containerDetalhes.innerHTML = `
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><strong>Nome Fantasia:</strong> ${detalhes.nome_fantasia || '-'}</li>
+            <li class="mb-2"><strong>Razão Social:</strong> ${detalhes.razao_social || 'Não informada'}</li>
+            <li class="mb-2"><strong>CNPJ:</strong> ${detalhes.cnpj || '-'}</li>
+            <li class="mb-2"><strong>Localização:</strong> ${detalhes.cidade || '-'} / ${detalhes.uf || '-'}</li>
+            <li class="mb-2"><strong>Endereço:</strong> ${detalhes.logradouro || ''} ${detalhes.numero || ''} ${detalhes.bairro ? '- ' + detalhes.bairro : ''}</li>
+            <li><strong>Descrição:</strong> ${detalhes.descricao || 'Sem descrição cadastrada.'}</li>
+          </ul>
+        `;
+      }
+
+      // Logout
+      document.getElementById('btn-sair').addEventListener('click', fazerLogout);
+
+      // Testes de autorização (RNF05)
+      async function testarRota(url, nomeArea) {
+        limparAlerta('resultado-teste-autorizacao');
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (res.ok && data.sucesso) {
+            exibirAlerta('resultado-teste-autorizacao', `[${res.status} OK] ${data.mensagem}`, 'success');
+          } else {
+            exibirAlerta('resultado-teste-autorizacao', `[${res.status} Acesso Recusado] ${data.mensagem}`, 'danger');
+          }
+        } catch (error) {
+          exibirAlerta('resultado-teste-autorizacao', `Erro ao testar a rota ${nomeArea}: ${error.message}`, 'danger');
+        }
+      }
+
+      document.getElementById('btn-testar-cliente').addEventListener('click', () => {
+        testarRota('/api/auth/area-cliente', 'Área do Cliente');
+      });
+
+      document.getElementById('btn-testar-oficina').addEventListener('click', () => {
+        testarRota('/api/auth/area-oficina', 'Área da Oficina');
+      });
+    });
+  </script>
+</body>
+</html>
