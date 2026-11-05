@@ -100,12 +100,12 @@ async function listarPorOficinaId(oficinaId, client = null) {
 }
 
 /**
- * Remove (inativa logicamente ou deleta) uma janela de disponibilidade (RN06).
+ * Inativa logicamente uma janela sem quebrar agendamentos historicos (RN14).
  */
 async function removerDisponibilidade(id, oficinaId, client = null) {
   const sql = `
-    DELETE FROM disponibilidades
-    WHERE id = $1 AND oficina_id = $2
+    UPDATE disponibilidades SET ativo = false, atualizado_em = CURRENT_TIMESTAMP
+    WHERE id = $1 AND oficina_id = $2 AND ativo = true
     RETURNING id;
   `;
   const executor = client || db;
