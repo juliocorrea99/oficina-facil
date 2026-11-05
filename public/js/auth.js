@@ -66,6 +66,7 @@ function inicializarNavbar(usuario) {
       : '<span class="badge bg-primary ms-1">Cliente</span>';
 
     navContainer.innerHTML = `
+      <a href="/oficinas.html" class="btn btn-link text-decoration-none text-dark btn-sm me-2">Buscar Oficinas</a>
       <span class="navbar-text me-3 text-dark">
         Olá, <strong>${usuario.nome}</strong> ${perfilBadge}
       </span>
@@ -76,6 +77,7 @@ function inicializarNavbar(usuario) {
     document.getElementById('btn-logout')?.addEventListener('click', fazerLogout);
   } else {
     navContainer.innerHTML = `
+      <a href="/oficinas.html" class="btn btn-link text-decoration-none text-dark btn-sm me-2">Buscar Oficinas</a>
       <a href="/login.html" class="btn btn-outline-primary btn-sm me-2">Entrar</a>
       <a href="/cadastro.html" class="btn btn-primary btn-sm">Cadastrar-se</a>
     `;
