@@ -70,6 +70,7 @@ function inicializarNavbar(usuario) {
       <span class="navbar-text me-3 text-dark">
         Olá, <strong>${usuario.nome}</strong> ${perfilBadge}
       </span>
+      ${usuario.perfil === 'cliente' ? '<a href="/veiculos.html" class="btn btn-link btn-sm me-1">Veículos</a><a href="/agendamentos.html" class="btn btn-link btn-sm me-2">Agendamentos</a>' : ''}
       <a href="/dashboard.html" class="btn btn-outline-primary btn-sm me-2">Meu Painel</a>
       <button id="btn-logout" class="btn btn-outline-danger btn-sm">Sair</button>
     `;

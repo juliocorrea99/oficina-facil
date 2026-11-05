@@ -87,7 +87,10 @@
 
       <!-- Janelas de Disponibilidade (RF03, RF05, RF07) -->
       <div class="card auth-card p-4 mb-4">
-        <h2 class="h5 fw-bold text-primary mb-2">Disponibilidade na Agenda</h2>
+        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-2">
+          <h2 class="h5 fw-bold text-primary mb-0">Disponibilidade na Agenda</h2>
+          <a id="btn-agendar-oficina" class="btn btn-primary btn-sm" href="/login.html">Agendar atendimento</a>
+        </div>
         <p class="text-muted small mb-3">Janelas de atendimento informadas pela oficina.</p>
         <div id="lista-disponibilidades" class="d-flex flex-wrap gap-2">
           <!-- Preenchido via JavaScript -->
@@ -140,6 +143,7 @@
         document.getElementById('conteudo-oficina').classList.remove('d-none');
 
         document.getElementById('oficina-nome').textContent = o.nomeFantasia;
+        document.getElementById('btn-agendar-oficina').href = `/agendar.html?oficinaId=${encodeURIComponent(o.id)}`;
         document.getElementById('oficina-razao').textContent = o.razaoSocial || '';
         document.getElementById('oficina-descricao').textContent = o.descricao || 'Descrição não informada pela oficina.';
         document.getElementById('oficina-endereco').textContent = `${o.cidade} / ${o.uf}${o.logradouro ? ' — ' + o.logradouro + ', ' + (o.numero || 'S/N') : ''}`;

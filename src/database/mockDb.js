@@ -482,14 +482,11 @@ class MockDatabase {
       return { rows: [{ ...novaDisp }], rowCount: 1 };
     }
 
-    // 22. Deleta disponibilidade: DELETE FROM disponibilidades WHERE id = $1 AND oficina_id = $2
-    if (/^DELETE\s+FROM\s+disponibilidades/i.test(trimmed)) {
+    // 22. Inativa disponibilidade, preservando historico (RN14).
+    if (/^UPDATE\s+disponibilidades\s+SET\s+ativo\s*=\s*false/i.test(trimmed)) {
       const [id, oficinaId] = params;
-      const index = this.disponibilidades.findIndex(d => d.id === Number(id) && d.oficina_id === Number(oficinaId));
-      if (index !== -1) {
-        this.disponibilidades.splice(index, 1);
-        return { rows: [{ id: Number(id) }], rowCount: 1 };
-      }
+      const disp = this.disponibilidades.find(d => d.id === Number(id) && d.oficina_id === Number(oficinaId) && d.ativo);
+      if (disp) { disp.ativo = false; return { rows: [{ id: disp.id }], rowCount: 1 }; }
       return { rows: [], rowCount: 0 };
     }
 
