@@ -7,6 +7,7 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const oficinaRoutes = require('./routes/oficinaRoutes');
 const veiculoRoutes = require('./routes/veiculoRoutes');
 const agendamentoRoutes = require('./routes/agendamentoRoutes');
+const ordemRoutes = require('./routes/ordemRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,9 @@ app.use('/api/oficinas', oficinaRoutes);
 // Rotas de veiculos e agendamentos (RF06-RF09)
 app.use('/api/veiculos', veiculoRoutes);
 app.use('/api/agendamentos', agendamentoRoutes);
+
+// Ordens de serviço, orçamento e aprovação (RF10-RF13)
+app.use('/api/ordens', ordemRoutes);
 
 // Inicia o servidor.
 if (require.main === module) {

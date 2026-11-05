@@ -11,6 +11,7 @@ async function carregar(){
     <h2 class="h5">${esc(a.oficinaNome)} <span class="badge ${a.status==='cancelado'?'bg-secondary':a.status==='recebido'?'bg-info':'bg-success'}">${esc(a.status)}</span></h2>
     <p class="mb-1"><strong>${esc(a.servicoNome)}</strong> — ${esc(a.veiculoPlaca)} (${esc(a.veiculoMarca)} ${esc(a.veiculoModelo)})</p>
     <p class="mb-3">${esc(a.data)} · ${esc(a.horarioInicio)}–${esc(a.horarioFim)}</p>
+    ${a.status==='recebido'?`<a class="btn btn-outline-primary btn-sm mb-2" href="/ordens.html">Acompanhar ordem de serviço</a>`:''}
     ${a.status==='agendado'?`<div class="d-flex gap-2"><button class="btn btn-outline-primary btn-sm" data-acao="reagendar" data-id="${a.id}">Reagendar</button><button class="btn btn-outline-danger btn-sm" data-acao="cancelar" data-id="${a.id}">Cancelar</button></div>
     <div id="remarcar-${a.id}" class="d-none mt-3 p-3 border rounded bg-light"><label class="form-label" for="data-${a.id}">Nova data</label><input type="date" class="form-control mb-2" id="data-${a.id}" value="${esc(a.data)}"><label class="form-label" for="hora-${a.id}">Novo horário</label><select class="form-select mb-3" id="hora-${a.id}"><option value="">Escolha uma nova data</option></select><button type="button" class="btn btn-primary btn-sm" data-acao="salvar" data-id="${a.id}">Confirmar novo horário</button></div>`:''}
   </article></div>`).join(''):'<div class="col-12"><div class="alert alert-light border">Nenhum agendamento cadastrado. <a href="/oficinas.html">Buscar oficinas</a></div></div>';

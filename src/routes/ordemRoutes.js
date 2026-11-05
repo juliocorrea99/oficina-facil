@@ -1,0 +1,16 @@
+'use strict';
+const router = require('express').Router();
+const ctrl = require('../controllers/ordemController');
+const {autenticar, autorizarPerfil} = require('../middlewares/authMiddleware');
+router.use(autenticar);
+router.get('/', autorizarPerfil('cliente','oficina'), ctrl.listar);
+router.get('/:id', autorizarPerfil('cliente','oficina'), ctrl.obter);
+router.post('/receber', autorizarPerfil('oficina'), ctrl.receber);
+router.put('/:id/diagnostico', autorizarPerfil('oficina'), ctrl.diagnosticar);
+router.put('/:id/orcamento', autorizarPerfil('oficina'), ctrl.orcamento);
+router.post('/:id/enviar-orcamento', autorizarPerfil('oficina'), ctrl.enviar);
+router.post('/:id/decisao', autorizarPerfil('cliente'), ctrl.decidir);
+router.post('/:id/encerrar', autorizarPerfil('cliente'), ctrl.encerrar);
+router.post('/:id/avancar', autorizarPerfil('oficina'), ctrl.avancar);
+router.post('/:id/cancelar', autorizarPerfil('oficina'), ctrl.cancelar);
+module.exports=router;
