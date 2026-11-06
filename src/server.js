@@ -8,6 +8,7 @@ const oficinaRoutes = require('./routes/oficinaRoutes');
 const veiculoRoutes = require('./routes/veiculoRoutes');
 const agendamentoRoutes = require('./routes/agendamentoRoutes');
 const ordemRoutes = require('./routes/ordemRoutes');
+const avaliacaoRoutes = require('./routes/avaliacaoRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,6 +46,9 @@ app.use('/api/agendamentos', agendamentoRoutes);
 
 // Ordens de serviço, orçamento e aprovação (RF10-RF13)
 app.use('/api/ordens', ordemRoutes);
+
+// RF14: avaliações verificadas (públicas para consulta, privadas para cadastro).
+app.use('/api/avaliacoes', avaliacaoRoutes);
 
 // Inicia o servidor.
 if (require.main === module) {

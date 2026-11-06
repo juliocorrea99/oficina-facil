@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const oficinaController = require('../controllers/oficinaController');
+const avaliacaoController = require('../controllers/avaliacaoController');
 const { autenticar, autorizarPerfil } = require('../middlewares/authMiddleware');
 
 // Rotas de gestão da oficina autenticada (RF03)
@@ -19,6 +20,7 @@ router.delete('/me/disponibilidades/:id', autenticar, autorizarPerfil('oficina')
 
 // Rotas públicas (RF04 - Pesquisa de oficinas, RF05 - Perfil público)
 router.get('/', oficinaController.pesquisar);
+router.get('/:id/avaliacoes', avaliacaoController.publicas);
 router.get('/:id', oficinaController.obterPerfilPublico);
 
 module.exports = router;

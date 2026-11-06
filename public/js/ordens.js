@@ -10,9 +10,10 @@ const tipos = {peca:'Peça',servico:'Serviço',mao_de_obra:'Mão de obra'};
 let perfil = null;
 let ordens = [];
 let pendentes = [];
+let minhasAvaliacoes = new Map();
 let carregando = false;
 function aviso(mensagem, erro = false) {
-  $('aviso-os').innerHTML = `<div class="alert alert-${erro?'danger':'success'}" role="alert">${esc(mensagem)}</div>`;
+  window.OficinaFeedback.mostrar('aviso-os', mensagem, erro ? 'erro' : 'sucesso');
   $('aviso-os').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 async function api(url, method = 'GET', body) {
@@ -79,6 +80,26 @@ function controlesCliente(o) {
   if (o.status === 'cancelado') return `<p class="text-muted mt-3">Atendimento encerrado. ${esc(o.motivoCancelamento||'')}</p>`;
   return '';
 }
+function avaliacaoCliente(o) {
+  if (perfil !== 'cliente' || !['finalizado','entregue'].includes(o.status)) return '';
+  const atual = minhasAvaliacoes.get(Number(o.id));
+  if (atual) return `<section class="border rounded p-3 mt-3" aria-label="Avaliação enviada">
+    <p class="fw-semibold mb-1">Sua avaliação: ${'★'.repeat(Number(atual.nota))}${'☆'.repeat(5-Number(atual.nota))} (${esc(atual.nota)}/5)</p>
+    <p class="mb-0 text-break">${esc(atual.comentario)}</p>
+  </section>`;
+  return `<section class="border rounded p-3 mt-3" aria-label="Avaliar atendimento">
+    <h4 class="h6 fw-bold">Avaliar atendimento concluído</h4>
+    <p class="small text-muted">Sua avaliação será exibida publicamente no perfil da oficina. Não informe dados pessoais.</p>
+    <label class="form-label" for="nota-${o.id}">Nota (1 a 5 estrelas)</label>
+    <select id="nota-${o.id}" class="form-select mb-2" required>
+      <option value="">Selecione uma nota</option>
+      ${[1,2,3,4,5].map(n=>`<option value="${n}">${n} ${n===1?'estrela':'estrelas'}</option>`).join('')}
+    </select>
+    <label class="form-label" for="comentario-${o.id}">Comentário</label>
+    <textarea id="comentario-${o.id}" class="form-control mb-2" maxlength="1000" rows="3" required placeholder="Conte como foi o atendimento"></textarea>
+    <button type="button" class="btn btn-primary btn-sm" data-acao="avaliar" data-id="${o.id}">Enviar avaliação</button>
+  </section>`;
+}
 function cartao(o) {
   return `<article class="card auth-card p-4 mb-3" id="ordem-${o.id}">
    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2"><h3 class="h5 fw-bold mb-0">O.S. #${o.id} — ${esc(perfil==='oficina'?o.clienteNome:o.oficinaNome)}</h3>${etiqueta(o.status)}</div>
@@ -88,6 +109,7 @@ function cartao(o) {
    <h4 class="h6 fw-bold">Orçamento ${o.orcamentoVersao?`(versão ${esc(o.orcamentoVersao)})`:''}</h4>${conteudoOrcamento(o)}
    ${o.decisaoOrcamento ? `<p class="small"><strong>Última decisão:</strong> ${o.decisaoOrcamento==='aprovado'?'Aprovado':'Recusado'}${o.motivoRecusa?` — ${esc(o.motivoRecusa)}`:''}</p>` : ''}
    ${perfil==='oficina'?controlesOficina(o):controlesCliente(o)}
+   ${avaliacaoCliente(o)}
   </article>`;
 }
 function renderizar() {
@@ -104,7 +126,12 @@ async function carregar() {
   try {
     const resultado = await api('/api/ordens');
     ordens = resultado.ordens || [];
-    if (perfil === 'oficina') pendentes = (await api('/api/agendamentos/oficina')).agendamentos || [];
+    if (perfil === 'oficina') {
+      pendentes = (await api('/api/agendamentos/oficina')).agendamentos || [];
+    } else {
+      const avaliacoes = (await api('/api/avaliacoes/minhas')).avaliacoes || [];
+      minhasAvaliacoes = new Map(avaliacoes.map(a=>[Number(a.ordemId),a]));
+    }
     renderizar();
   } catch (e) {aviso(e.message,true);}
   finally {carregando = false;}
@@ -122,6 +149,13 @@ async function executar(b) {
     if (!confirm('Confirmar o recebimento físico deste veículo e abrir sua ordem de serviço?')) return;
     rota = '/api/ordens/receber'; dados = {agendamentoId:id};
   } else if (!ordem) return;
+  else if (acao === 'avaliar') {
+    const campoNota = $(`nota-${id}`), campoComentario = $(`comentario-${id}`);
+    const nota = Number(campoNota?.value), comentario = campoComentario?.value.trim() || '';
+    if (!campoNota?.value || !Number.isInteger(nota) || nota < 1 || nota > 5) {aviso('Escolha uma nota de 1 a 5 estrelas.', true);return;}
+    if (!comentario || comentario.length > 1000) {aviso('Informe um comentário com até 1000 caracteres.', true);return;}
+    rota='/api/avaliacoes'; dados={ordemId:id,nota,comentario};
+  }
   else if (acao === 'diagnosticar') {
     rota = `/api/ordens/${id}/diagnostico`; metodo = 'PUT'; dados = {diagnostico:$(`diagnostico-${id}`).value};
   } else if (acao === 'salvar-orcamento') {
