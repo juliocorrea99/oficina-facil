@@ -100,9 +100,9 @@
       <!-- Avaliações dos Clientes (RF05, RF14) -->
       <div class="card auth-card p-4">
         <h2 class="h5 fw-bold text-primary mb-2">Avaliações dos Clientes</h2>
-        <p class="text-muted small mb-3">As avaliações de clientes serão exibidas quando o recurso estiver disponível.</p>
+        <p class="text-muted small mb-3">Avaliações de clientes com atendimento concluído. Os comentários são públicos.</p>
 
-        <div id="secao-avaliacoes" class="alert alert-light border text-center py-4 mb-0">
+        <div id="secao-avaliacoes" class="border rounded p-3 mb-0" aria-live="polite">
           <span class="text-muted">Esta oficina ainda não possui avaliações cadastradas.</span>
         </div>
       </div>
@@ -115,6 +115,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/auth.js"></script>
+  <script src="/js/feedback.js"></script>
+  <script src="/js/avaliacoes-publicas.js"></script>
   <script>
     const DIAS = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
