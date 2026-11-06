@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Painel - Oficina Fácil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">Oficina <span>Fácil</span></a>
+        <div class="d-flex align-items-center gap-2">
+          <a href="/oficinas.html" class="btn btn-outline-primary btn-sm">Buscar Oficinas</a>
+          <a href="/perfil.html" class="btn btn-outline-secondary btn-sm">Editar Perfil</a>
+          <button id="btn-sair" class="btn btn-outline-danger btn-sm">Sair</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="container my-5">
+    <div id="loading-spinner" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Carregando painel...</span>
+      </div>
+      <p class="text-muted mt-2">Carregando seus dados...</p>
+    </div>
+
+    <div id="painel-conteudo" class="d-none">
+      <!-- Saudação e Perfil -->
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+          <h1 class="h3 fw-bold mb-1">
+            Olá, <span id="usuario-nome">Usuário</span>!
+          </h1>
+          <p class="text-muted mb-0">Bem-vindo ao seu painel na plataforma Oficina Fácil.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span id="badge-perfil" class="badge badge-perfil bg-primary">Cliente</span>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <!-- Card: Informações da Conta -->
+        <div class="col-md-6">
+          <div class="card auth-card h-100 p-4">
+            <h2 class="h5 fw-bold text-primary mb-3">Minha Conta</h2>
+            <ul class="list-unstyled mb-3">
+              <li class="mb-2"><strong>ID:</strong> <span id="usuario-id">-</span></li>
+              <li class="mb-2"><strong>E-mail:</strong> <span id="usuario-email">-</span></li>
+              <li class="mb-2"><strong>Perfil:</strong> <span id="usuario-perfil-texto">-</span></li>
+              <li class="mb-2"><strong>Telefone:</strong> <span id="usuario-telefone">Não informado</span></li>
+              <li><strong>Conta criada em:</strong> <span id="usuario-criado-em">-</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card: Informações Específicas do Perfil -->
+        <div class="col-md-6">
+          <div class="card auth-card h-100 p-4">
+            <h2 id="titulo-detalhes-perfil" class="h5 fw-bold text-primary mb-3">Detalhes do Perfil</h2>
+            <div id="conteudo-detalhes-perfil">
+              <!-- Preenchido via JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Acesso a veículos e agendamentos do Cliente -->
+      <section id="secao-jornada-cliente" class="d-none mb-4" aria-label="Veículos e agendamentos">
+        <div class="card auth-card p-4">
+          <h2 class="h4 fw-bold text-primary mb-3">Meus atendimentos</h2>
+          <p class="text-muted">Cadastre seus veículos e acompanhe os serviços agendados.</p>
+          <div class="d-flex gap-2 flex-wrap"><a href="/veiculos.html" class="btn btn-primary">Meus veículos</a><a href="/agendamentos.html" class="btn btn-outline-primary">Meus agendamentos</a><a href="/oficinas.html" class="btn btn-outline-secondary">Agendar serviço</a><a href="/ordens.html" class="btn btn-outline-success">Minhas ordens de serviço</a></div>
+        </div>
+      </section>
+      <!-- Agenda da própria Oficina -->
+      <section id="secao-agenda-oficina" class="d-none mb-4" aria-label="Agenda da oficina">
+        <div class="card auth-card p-4">
+          <h2 class="h4 fw-bold text-primary mb-3">Agenda da oficina</h2>
+          <div class="row g-2 mb-3 align-items-end"><div class="col-sm-5"><label class="form-label" for="filtro-agenda-data">Filtrar por data</label><input class="form-control" id="filtro-agenda-data" type="date"></div><div class="col-auto"><button id="btn-filtrar-agenda" type="button" class="btn btn-primary">Buscar</button></div><div class="col-auto"><button id="btn-limpar-agenda" type="button" class="btn btn-outline-secondary">Mostrar todos</button></div></div>
+          <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Data / Hora</th><th>Cliente</th><th>Veículo</th><th>Serviço</th><th>Situação</th><th>Observações</th></tr></thead><tbody id="corpo-agenda-oficina"><tr><td colspan="6">Carregando...</td></tr></tbody></table></div>
+          <a href="/ordens.html" class="btn btn-primary btn-sm">Receber veículos e gerenciar ordens de serviço</a>
+        </div>
+      </section>
+
+      <!-- SEÇÃO EXCLUSIVA DA OFICINA: Gestão de Serviços, Horários e Disponibilidade (RF03) -->
+      <div id="secao-gestao-oficina" class="d-none mb-4">
+        <div class="card auth-card p-4">
+          <h2 class="h4 fw-bold text-primary mb-3">Gestão da Oficina</h2>
+
+          <ul class="nav nav-tabs mb-4" id="oficinaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active fw-semibold" id="tab-servicos" data-bs-toggle="tab" data-bs-target="#conteudo-servicos" type="button" role="tab">Serviços Oferecidos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold" id="tab-horarios" data-bs-toggle="tab" data-bs-target="#conteudo-horarios" type="button" role="tab">Horários de Funcionamento</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold" id="tab-disp" data-bs-toggle="tab" data-bs-target="#conteudo-disp" type="button" role="tab">Janelas de Disponibilidade</button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="oficinaTabsContent">
+            <!-- Aba 1: Serviços -->
+            <div class="tab-pane fade show active" id="conteudo-servicos" role="tabpanel">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h6 fw-bold mb-0">Catálogo de Serviços</h3>
+                <button type="button" id="btn-novo-servico" class="btn btn-sm btn-primary" aria-controls="form-novo-servico-col">+ Novo Serviço</button>
+              </div>
+
+              <div id="alerta-servicos" class="alert-container mb-3"></div>
+
+              <!-- Formulário de Novo Serviço -->
+              <div class="collapse mb-4" id="form-novo-servico-col">
+                <div class="card p-3 bg-light border">
+                  <h4 id="titulo-form-servico" class="h6 fw-bold mb-2">Cadastrar Novo Serviço</h4>
+                  <form id="form-cadastrar-servico" class="row g-2">
+                    <div class="col-md-5">
+                      <label class="form-label small">Nome do Serviço *</label>
+                      <input type="text" class="form-control form-control-sm" id="serv-nome" required placeholder="Ex: Alinhamento e Balanceamento">
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label small">Duração (minutos) *</label>
+                      <input type="number" class="form-control form-control-sm" id="serv-duracao" min="5" value="60" required>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small">Preço Estimado (R$)</label>
+                      <input type="number" min="0" step="0.01" class="form-control form-control-sm" id="serv-preco" placeholder="150.00">
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label small">Descrição Detalhada</label>
+                      <textarea class="form-control form-control-sm" id="serv-descricao" rows="2" placeholder="O que está incluso no serviço..."></textarea>
+                    </div>
+                    <div class="col-12 text-end mt-2">
+                      <button type="button" id="btn-cancelar-servico" class="btn btn-sm btn-outline-secondary d-none me-2">Cancelar</button>
+                      <button type="submit" id="btn-salvar-servico" class="btn btn-sm btn-success">Salvar Serviço</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Tabela de Serviços -->
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Nome</th>
+                      <th>Duração</th>
+                      <th>Preço</th>
+                      <th>Status</th>
+                      <th class="text-end">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-corpo-servicos">
+                    <tr><td colspan="5" class="text-center text-muted">Carregando serviços...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Aba 2: Horários -->
+            <div class="tab-pane fade" id="conteudo-horarios" role="tabpanel">
+              <h3 class="h6 fw-bold mb-3">Definição dos Horários Semanais</h3>
+              <div id="alerta-horarios" class="alert-container mb-3"></div>
+
+              <form id="form-salvar-horarios">
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Dia da Semana</th>
+                        <th>Abertura</th>
+                        <th>Fechamento</th>
+                        <th>Fechado?</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabela-corpo-horarios">
+                      <!-- Preenchido via JavaScript -->
+                    </tbody>
+                  </table>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Salvar Horários de Funcionamento</button>
+              </form>
+            </div>
+
+            <!-- Aba 3: Disponibilidade -->
+            <div class="tab-pane fade" id="conteudo-disp" role="tabpanel">
+              <h3 class="h6 fw-bold mb-3">Adicionar Janela de Atendimento</h3>
+              <div id="alerta-disp" class="alert-container mb-3"></div>
+
+              <form id="form-cadastrar-disp" class="row g-2 mb-4 bg-light p-3 rounded border">
+                <div class="col-md-3">
+                  <label class="form-label small">Data *</label>
+                  <input type="date" class="form-control form-control-sm" id="disp-data" required>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">Horário de Início *</label>
+                  <input type="time" class="form-control form-control-sm" id="disp-inicio" required value="08:00">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">Horário de Fim *</label>
+                  <input type="time" class="form-control form-control-sm" id="disp-fim" required value="12:00">
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small">Vagas *</label>
+                  <input type="number" min="1" value="1" class="form-control form-control-sm" id="disp-vagas" required>
+                </div>
+                <div class="col-md-1 d-grid">
+                  <label class="form-label small">&nbsp;</label>
+                  <button type="submit" class="btn btn-sm btn-primary">Adicionar</button>
+                </div>
+              </form>
+
+              <h4 class="h6 fw-bold mb-2">Janelas Cadastradas</h4>
+              <div id="lista-janelas-disp" class="d-flex flex-wrap gap-2">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-3 text-center text-muted">
+    <div class="container small">&copy; 2026 Oficina Fácil — Todos os direitos reservados.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/agenda-oficina.js"></script>
+  <script>
+    const DIAS_NOMES = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const usuario = await obterUsuarioAtual();
+
+      if (!usuario) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      document.getElementById('loading-spinner').classList.add('d-none');
+      document.getElementById('painel-conteudo').classList.remove('d-none');
+
+      // Preenche dados básicos
+      document.getElementById('usuario-nome').textContent = usuario.nome;
+      document.getElementById('usuario-id').textContent = usuario.id;
+      document.getElementById('usuario-email').textContent = usuario.email;
+      document.getElementById('usuario-perfil-texto').textContent = usuario.perfil === 'oficina' ? 'Oficina Mecânica' : 'Cliente';
+      document.getElementById('usuario-telefone').textContent = usuario.telefone || 'Não informado';
+      document.getElementById('usuario-criado-em').textContent = usuario.criadoEm
+        ? new Date(usuario.criadoEm).toLocaleDateString('pt-BR')
+        : 'Hoje';
+
+      const badgePerfil = document.getElementById('badge-perfil');
+      if (usuario.perfil === 'oficina') {
+        badgePerfil.className = 'badge badge-perfil bg-success';
+        badgePerfil.textContent = 'Oficina Mecânica';
+      } else {
+        badgePerfil.className = 'badge badge-perfil bg-primary';
+        badgePerfil.textContent = 'Cliente';
+      }
+
+      // Detalhes do perfil
+      const containerDetalhes = document.getElementById('conteudo-detalhes-perfil');
+      const tituloDetalhes = document.getElementById('titulo-detalhes-perfil');
+      const detalhes = usuario.perfilDetalhes || {};
+
+      if (usuario.perfil === 'cliente') {
+        tituloDetalhes.textContent = 'Dados do Cliente';
+        document.getElementById('secao-jornada-cliente').classList.remove('d-none');
+        containerDetalhes.innerHTML = `
+          <ul class="list-unstyled mb-3">
+            <li class="mb-2"><strong>CPF:</strong> ${detalhes.cpf || 'Não informado'}</li>
+          </ul>
+          <a href="/oficinas.html" class="btn btn-primary btn-sm">Pesquisar Oficinas</a>
+        `;
+      } else if (usuario.perfil === 'oficina') {
+        tituloDetalhes.textContent = 'Dados da Oficina Mecânica';
+        containerDetalhes.innerHTML = `
+          <ul class="list-unstyled mb-3">
+            <li class="mb-2"><strong>Nome Fantasia:</strong> ${detalhes.nome_fantasia || '-'}</li>
+            <li class="mb-2"><strong>Razão Social:</strong> ${detalhes.razao_social || 'Não informada'}</li>
+            <li class="mb-2"><strong>CNPJ:</strong> ${detalhes.cnpj || '-'}</li>
+            <li class="mb-2"><strong>Localização:</strong> ${detalhes.cidade || '-'} / ${detalhes.uf || '-'}</li>
+            <li><strong>Descrição:</strong> ${detalhes.descricao || 'Sem descrição cadastrada.'}</li>
+          </ul>
+          <a href="/oficina.html?id=${detalhes.id || ''}" class="btn btn-outline-success btn-sm">Ver Meu Perfil Público</a>
+        `;
+
+        // Ativa seção de gestão da oficina
+        document.getElementById('secao-gestao-oficina').classList.remove('d-none');
+        inicializarGestaoOficina();
+        document.getElementById('secao-agenda-oficina').classList.remove('d-none');
+        inicializarAgendaOficina();
+      }
+
+      // Logout
+      document.getElementById('btn-sair').addEventListener('click', fazerLogout);
+
+    });
+
+    // ========================================================
+    // Funções de Gestão da Oficina (RF03)
+    // ========================================================
+    let servicosCarregados = [];
+    let servicoEmEdicao = null;
+
+    function escaparHtml(texto) {
+      return String(texto ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[char]);
+    }
+
+    function prepararFormularioServico(servico = null) {
+      const form = document.getElementById('form-cadastrar-servico');
+      form.reset();
+      servicoEmEdicao = servico ? Number(servico.id) : null;
+      document.getElementById('titulo-form-servico').textContent = servico ? 'Editar Serviço' : 'Cadastrar Novo Serviço';
+      document.getElementById('btn-salvar-servico').textContent = servico ? 'Salvar Alterações' : 'Salvar Serviço';
+      document.getElementById('btn-cancelar-servico').classList.toggle('d-none', !servico);
+
+      if (servico) {
+        document.getElementById('serv-nome').value = servico.nome || '';
+        document.getElementById('serv-duracao').value = servico.duracaoEstimadaMinutos;
+        document.getElementById('serv-preco').value = servico.precoEstimado ?? '';
+        document.getElementById('serv-descricao').value = servico.descricao || '';
+      }
+      document.getElementById('form-novo-servico-col').classList.add('show');
+      document.getElementById('serv-nome').focus();
+    }
+
+    function cancelarEdicaoServico() {
+      servicoEmEdicao = null;
+      document.getElementById('form-cadastrar-servico').reset();
+      document.getElementById('titulo-form-servico').textContent = 'Cadastrar Novo Serviço';
+      document.getElementById('btn-salvar-servico').textContent = 'Salvar Serviço';
+      document.getElementById('btn-cancelar-servico').classList.add('d-none');
+      document.getElementById('form-novo-servico-col').classList.remove('show');
+    }
+
+    function inicializarGestaoOficina() {
+      carregarServicos();
+      carregarHorarios();
+      carregarDisponibilidades();
+
+      document.getElementById('btn-novo-servico').addEventListener('click', () => {
+        limparAlerta('alerta-servicos');
+        prepararFormularioServico();
+      });
+      document.getElementById('btn-cancelar-servico').addEventListener('click', cancelarEdicaoServico);
+
+      // Ações da tabela: não é necessário injetar código JavaScript em atributos HTML.
+      document.getElementById('tabela-corpo-servicos').addEventListener('click', async (event) => {
+        const botao = event.target.closest('button[data-acao-servico]');
+        if (!botao) return;
+        const id = Number(botao.dataset.id);
+        const servico = servicosCarregados.find(item => Number(item.id) === id);
+        if (!servico) {
+          exibirAlerta('alerta-servicos', 'Serviço não encontrado. Atualize a página.', 'danger');
+          return;
+        }
+        if (botao.dataset.acaoServico === 'editar') {
+          limparAlerta('alerta-servicos');
+          prepararFormularioServico(servico);
+        } else if (botao.dataset.acaoServico === 'status') {
+          await alternarStatusServico(id, !servico.ativo);
+        }
+      });
+
+      document.getElementById('form-cadastrar-servico').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        limparAlerta('alerta-servicos');
+
+        const payload = {
+          nome: document.getElementById('serv-nome').value.trim(),
+          duracaoEstimadaMinutos: document.getElementById('serv-duracao').value,
+          precoEstimado: document.getElementById('serv-preco').value,
+          descricao: document.getElementById('serv-descricao').value.trim()
+        };
+        const editando = servicoEmEdicao !== null;
+        const endereco = editando ? `/api/oficinas/me/servicos/${servicoEmEdicao}` : '/api/oficinas/me/servicos';
+
+        try {
+          const res = await fetch(endereco, {
+            method: editando ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+          if (res.ok && data.sucesso) {
+            cancelarEdicaoServico();
+            await carregarServicos();
+            exibirAlerta('alerta-servicos', editando ? 'Serviço atualizado com sucesso!' : 'Serviço cadastrado com sucesso!', 'success');
+          } else {
+            exibirAlerta('alerta-servicos', data.mensagem || 'Erro ao salvar serviço.', 'danger', data.erros);
+          }
+        } catch (err) {
+          exibirAlerta('alerta-servicos', 'Erro ao conectar ao servidor.', 'danger');
+        }
+      });
+
+      // Formulário horários
+      document.getElementById('form-salvar-horarios').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        limparAlerta('alerta-horarios');
+
+        const lista = [];
+        for (let dia = 0; dia <= 6; dia++) {
+          const fechado = document.getElementById(`hor-fechado-${dia}`).checked;
+          const abertura = document.getElementById(`hor-abertura-${dia}`).value;
+          const fechamento = document.getElementById(`hor-fechamento-${dia}`).value;
+          lista.push({ diaSemana: dia, horarioAbertura: abertura, horarioFechamento: fechamento, fechado });
+        }
+
+        try {
+          const res = await fetch('/api/oficinas/me/horarios', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ horarios: lista })
+          });
+          const data = await res.json();
+          if (res.ok && data.sucesso) {
+            exibirAlerta('alerta-horarios', 'Horários atualizados com sucesso!', 'success');
+          } else {
+            exibirAlerta('alerta-horarios', data.mensagem || 'Erro ao salvar horários', 'danger', data.erros);
+          }
+        } catch (err) {
+          exibirAlerta('alerta-horarios', 'Erro de conexão.', 'danger');
+        }
+      });
+
+      // Formulário disponibilidade
+      document.getElementById('form-cadastrar-disp').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        limparAlerta('alerta-disp');
+
+        const payload = {
+          data: document.getElementById('disp-data').value,
+          horarioInicio: document.getElementById('disp-inicio').value,
+          horarioFim: document.getElementById('disp-fim').value,
+          vagasSimultaneas: document.getElementById('disp-vagas').value
+        };
+
+        try {
+          const res = await fetch('/api/oficinas/me/disponibilidades', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+          if (res.ok && data.sucesso) {
+            exibirAlerta('alerta-disp', 'Janela de disponibilidade adicionada!', 'success');
+            carregarDisponibilidades();
+          } else {
+            exibirAlerta('alerta-disp', data.mensagem || 'Erro ao cadastrar disponibilidade', 'danger', data.erros);
+          }
+        } catch (err) {
+          exibirAlerta('alerta-disp', 'Erro de conexão.', 'danger');
+        }
+      });
+    }
+
+    async function carregarServicos() {
+      const tbody = document.getElementById('tabela-corpo-servicos');
+      try {
+        const res = await fetch('/api/oficinas/me/servicos');
+        if (!res.ok) throw new Error('Falha ao consultar serviços.');
+        const data = await res.json();
+        servicosCarregados = data.servicos || [];
+
+        if (servicosCarregados.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Nenhum serviço cadastrado ainda.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = servicosCarregados.map(s => {
+          const precoInformado = s.precoEstimado !== null && s.precoEstimado !== undefined && s.precoEstimado !== '';
+          const preco = precoInformado && Number.isFinite(Number(s.precoEstimado))
+            ? 'R$ ' + Number(s.precoEstimado).toFixed(2)
+            : 'Sob consulta';
+          return `
+          <tr>
+            <td><strong>${escaparHtml(s.nome)}</strong><br><small class="text-muted">${escaparHtml(s.descricao || '')}</small></td>
+            <td>${escaparHtml(s.duracaoEstimadaMinutos)} min</td>
+            <td>${preco}</td>
+            <td>${s.ativo ? '<span class="badge bg-success">Ativo</span>' : '<span class="badge bg-secondary">Inativo</span>'}</td>
+            <td class="text-end">
+              <div class="d-flex justify-content-end gap-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-outline-primary" data-acao-servico="editar" data-id="${Number(s.id)}">Editar</button>
+                <button type="button" class="btn btn-sm ${s.ativo ? 'btn-outline-warning' : 'btn-outline-success'}" data-acao-servico="status" data-id="${Number(s.id)}">
+                  ${s.ativo ? 'Inativar' : 'Ativar'}
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-danger text-center">Erro ao carregar serviços.</td></tr>';
+      }
+    }
+
+    async function alternarStatusServico(servicoId, novoStatus) {
+      try {
+        const res = await fetch(`/api/oficinas/me/servicos/${servicoId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ativo: novoStatus })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.sucesso) {
+          exibirAlerta('alerta-servicos', data.mensagem || 'Não foi possível alterar o status.', 'danger');
+          return;
+        }
+        await carregarServicos();
+        exibirAlerta('alerta-servicos', data.mensagem || 'Status atualizado.', 'success');
+      } catch (err) {
+        exibirAlerta('alerta-servicos', 'Erro ao alterar o status do serviço.', 'danger');
+      }
+    }
+
+    async function carregarHorarios() {
+      const tbody = document.getElementById('tabela-corpo-horarios');
+      try {
+        const res = await fetch('/api/oficinas/me/horarios');
+        const data = await res.json();
+        const mapa = {};
+        (data.horarios || []).forEach(h => { mapa[h.diaSemana] = h; });
+
+        let html = '';
+        for (let dia = 0; dia <= 6; dia++) {
+          const h = mapa[dia] || { horarioAbertura: '08:00', horarioFechamento: '18:00', fechado: (dia === 0) };
+          html += `
+            <tr>
+              <td><strong>${DIAS_NOMES[dia]}</strong></td>
+              <td><input type="time" class="form-control form-control-sm" id="hor-abertura-${dia}" value="${h.horarioAbertura || '08:00'}"></td>
+              <td><input type="time" class="form-control form-control-sm" id="hor-fechamento-${dia}" value="${h.horarioFechamento || '18:00'}"></td>
+              <td>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="hor-fechado-${dia}" ${h.fechado ? 'checked' : ''}>
+                  <label class="form-check-label small" for="hor-fechado-${dia}">Fechado</label>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-danger text-center">Erro ao carregar horários.</td></tr>';
+      }
+    }
+
+    async function carregarDisponibilidades() {
+      const container = document.getElementById('lista-janelas-disp');
+      try {
+        const res = await fetch('/api/oficinas/me/disponibilidades');
+        const data = await res.json();
+        const lista = data.disponibilidades || [];
+
+        if (lista.length === 0) {
+          container.innerHTML = '<span class="text-muted small">Nenhuma janela de disponibilidade cadastrada.</span>';
+          return;
+        }
+
+        container.innerHTML = lista.map(d => `
+          <div class="border rounded p-2 bg-white shadow-sm d-flex align-items-center gap-3">
+            <div>
+              <strong class="small d-block text-primary">${d.data}</strong>
+              <span class="small text-dark">${d.horarioInicio} - ${d.horarioFim} (${d.vagasSimultaneas} vagas)</span>
+            </div>
+            <button class="btn btn-outline-danger btn-sm py-0 px-2" onclick="removerDisponibilidade(${d.id})">&times;</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<span class="text-danger small">Erro ao carregar disponibilidades.</span>';
+      }
+    }
+
+    window.removerDisponibilidade = async function(id) {
+      if (!confirm('Deseja realmente remover esta janela de disponibilidade?')) return;
+      try {
+        const resposta = await fetch(`/api/oficinas/me/disponibilidades/${id}`, { method: 'DELETE' });
+        const dados = await resposta.json();
+        if (!resposta.ok || !dados.sucesso) {
+          exibirAlerta('alerta-disp', dados.mensagem || 'Não foi possível remover a janela.', 'danger');
+          return;
+        }
+        await carregarDisponibilidades();
+        exibirAlerta('alerta-disp', 'Janela removida da disponibilidade, com histórico preservado.', 'success');
+      } catch (err) {
+        exibirAlerta('alerta-disp', 'Erro ao remover janela.', 'danger');
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+
+name: Testes - Oficina Facil
+
+on:
+  push:
+    branches:
+      - feature/estrutura-inicial
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    name: Testes Node.js
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Executar testes
+        run: npm test
