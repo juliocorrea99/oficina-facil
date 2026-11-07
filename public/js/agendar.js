@@ -33,14 +33,33 @@ $('form-agendar').addEventListener('submit',async e=>{
   }catch(e){alerta('Erro de conexão. Verifique a agenda antes de tentar novamente.',true);}finally{$('confirmar').disabled=false;}
 });
 document.addEventListener('DOMContentLoaded',async()=>{
-  const u=await obterUsuarioAtual();if(!u||u.perfil!=='cliente'){alerta('Entre com uma conta de Cliente para confirmar agendamentos.',true);$('form-agendar').classList.add('d-none');const link=document.createElement('a');link.href='/login.html';link.className='btn btn-primary mb-3';link.textContent='Entrar como Cliente';$('alerta-agendamento').append(link);return;}
-  if(!Number.isSafeInteger(oid)||oid<1){alerta('Oficina inválida.',true);$('form-agendar').classList.add('d-none');return;}
+  // Os dados públicos da oficina devem aparecer também para visitantes sem login.
+  if(!Number.isSafeInteger(oid)||oid<1){
+    $('nome-oficina').textContent='Oficina inválida';
+    alerta('Oficina inválida.',true);$('form-agendar').classList.add('d-none');return;
+  }
+  let oficina;
+  try{
+    const resposta=await fetch(`/api/oficinas/${oid}`);
+    if(!resposta.ok)throw new Error('Não foi possível carregar os dados da oficina.');
+    oficina=(await resposta.json()).oficina;
+    if(!oficina||!oficina.nomeFantasia)throw new Error('Não foi possível carregar os dados da oficina.');
+    $('nome-oficina').textContent=oficina.nomeFantasia;
+  }catch(e){
+    $('nome-oficina').textContent='Oficina indisponível';
+    alerta(e.message,true);$('form-agendar').classList.add('d-none');return;
+  }
+  const u=await obterUsuarioAtual();
+  if(!u||u.perfil!=='cliente'){
+    alerta('Entre com uma conta de Cliente para confirmar agendamentos.',true);
+    $('form-agendar').classList.add('d-none');
+    const link=document.createElement('a');link.href='/login.html';link.className='btn btn-primary mb-3';link.textContent='Entrar como Cliente';$('alerta-agendamento').append(link);return;
+  }
   const hoje=new Date();$('data').min=`${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
   try{
-    const [ofi,vei]=await Promise.all([fetch(`/api/oficinas/${oid}`),fetch('/api/veiculos')]);
-    if(!ofi.ok||!vei.ok)throw new Error('Não foi possível carregar dados para agendamento.');
-    const oficina=(await ofi.json()).oficina;const veiculos=(await vei.json()).veiculos.filter(x=>x.ativo);
-    $('nome-oficina').textContent=oficina.nomeFantasia;
+    const vei=await fetch('/api/veiculos');
+    if(!vei.ok)throw new Error('Não foi possível carregar dados para agendamento.');
+    const veiculos=(await vei.json()).veiculos.filter(x=>x.ativo);
     $('servico').innerHTML='<option value="">Selecione um serviço</option>'+oficina.servicos.map(s=>`<option value="${s.id}">${esc(s.nome)} (${s.duracaoEstimadaMinutos} min)</option>`).join('');
     $('veiculo').innerHTML='<option value="">Selecione um veículo</option>'+veiculos.map(v=>`<option value="${v.id}">${esc(v.placa)} — ${esc(v.marca)} ${esc(v.modelo)}</option>`).join('');
     const preselecionado=new URLSearchParams(location.search).get('servicoId');if(preselecionado&&oficina.servicos.some(s=>String(s.id)===preselecionado))$('servico').value=preselecionado;
