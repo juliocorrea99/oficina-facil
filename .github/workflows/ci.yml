@@ -6,9 +6,11 @@ on:
     branches:
       - feature/estrutura-inicial
       - develop
+      - main
   pull_request:
     branches:
       - develop
+      - main
 
 permissions:
   contents: read
