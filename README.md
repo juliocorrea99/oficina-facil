@@ -38,6 +38,12 @@ O cliente pode recusar um orçamento e encerrar o atendimento. A oficina não de
 
 O código está organizado em `public/` (páginas e scripts do navegador), `src/` (rotas, controladores, serviços, acesso ao banco e servidor), `tests/` (testes automatizados) e `docs/` (especificações e decisões técnicas).
 
+## Colaboração com IA
+
+O projeto utilizou Google Antigravity e ChatGPT como apoio ao desenvolvimento e às correções do código, seguindo as especificações SDD presentes em `docs/`.
+
+As alterações foram submetidas a Pull Requests, revisadas por integrantes da equipe e validadas com testes automatizados.
+
 ## Pré-requisitos
 
 - Node.js 20 ou superior e npm, conforme a configuração documentada do projeto.
@@ -50,7 +56,7 @@ O código está organizado em `public/` (páginas e scripts do navegador), `src/
 
    ```bash
    git clone https://github.com/juliocorrea99/oficina-facil.git
-   cd oficina-facil
+cd oficina-facil
    ```
 
 2. Instale as dependências:
@@ -93,7 +99,7 @@ Execute:
 npm test
 ```
 
-**Última validação local documentada (06/11/2026):** 93 testes executados, 93 aprovados, nenhuma falha, na branch `develop`, após a integração das correções de navegação da PR #23.
+**Última validação local (08/11/2026):** 96 testes executados, 96 aprovados e nenhuma falha, na branch `main`, após a integração da Pull Request #26.
 
 Também foram executados testes manuais dos fluxos principais, da publicação de avaliação e da navegação em tela móvel simulada. Esses resultados **não substituem** uma auditoria completa de segurança, desempenho, acessibilidade ou publicação em produção.
 
@@ -121,4 +127,4 @@ A execução e a validação confirmadas até aqui ocorreram em ambiente **local
 
 ## Observações para entrega
 
-O resultado de 93 testes aprovados documenta a suíte automatizada na versão integrada. Antes da entrega, devem ser confirmados os requisitos não funcionais aplicáveis, os materiais exigidos pelo professor e, quando necessário, executada uma validação final na branch `main`.
+A última validação na branch `main` confirmou **96 testes automatizados aprovados, sem falhas**. Os testes manuais também verificaram os principais fluxos do MVP. Essas validações não substituem uma auditoria completa de segurança, desempenho e acessibilidade.
